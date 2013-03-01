@@ -19,17 +19,25 @@ class PackPlayer(object):
     def get_location(self):
         return self._packLoc
 
+    def set_location(self, location):
+        self._packLoc = location
+
     def dim(self, dimensions):
         self.size = dimensions
         self._packLoc = (self.viewSize[0] / 2 - dimensions[0] / 2, self.viewSize[1] - (dimensions[1] + 2))
 
     def update(self):
-        if PlayerAction.MOVE_RIGHT in self.actionsProvider.actions() and \
-                self._packLoc[0] < self.viewSize[0] - self.size[0] - self.PACK_SPEED:
-            self._packLoc = (self._packLoc[0] + self.PACK_SPEED, self._packLoc[1])
-        elif PlayerAction.MOVE_LEFT in self.actionsProvider.actions() and \
-                self._packLoc[0] > self.PACK_SPEED:
-            self._packLoc = (self._packLoc[0] - self.PACK_SPEED, self._packLoc[1])
+        newXLoc = self._packLoc[0] + self.get_x_delta()
+        if self.packXPositionInRange(newXLoc):
+            self._packLoc = (newXLoc, self._packLoc[1])
 
-    def set_location(self, location):
-        self._packLoc = location
+    def packXPositionInRange(self, newXLoc):
+        return self.viewSize[0] - self.size[0] >= newXLoc >= 0
+
+    def get_x_delta(self):
+        deltaX = 0
+        if PlayerAction.MOVE_RIGHT in self.actionsProvider.actions():
+            deltaX = self.PACK_SPEED
+        elif PlayerAction.MOVE_LEFT in self.actionsProvider.actions():
+            deltaX = -self.PACK_SPEED
+        return deltaX
