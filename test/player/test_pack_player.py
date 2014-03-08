@@ -1,8 +1,23 @@
 import mox
-from pack_sprite import PlayerAction
+from pygame.constants import K_RIGHT, K_LEFT
+from pygame.rect import Rect
 
-from src.action_provider import ActionsProvider
-from src.player.pack_player import PackPlayer
+from src.sprite.pack_sprite import PlayerAction
+from src.control.pack_control import PackControl
+
+
+class StubInputHandler:
+    def update(self, events):
+        pass
+
+    def add_event(self, type, value=None):
+        pass
+
+    def key_down(self, key):
+        pass
+
+    def input_type(self, type):
+        pass
 
 
 class TestPackPlayer:
@@ -11,43 +26,44 @@ class TestPackPlayer:
     SCREEN_HEIGHT = 100
     SCREEN_WIDTH = 100
 
-    def setup_method(self, method):
-        self.packPlayer = PackPlayer((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+    def setup(self):
+        self.packPlayer = PackControl(Rect(0, 0, self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.packPlayer.dim((self.PACK_WIDTH, self.PACK_HEIGHT))
         self.mocker = mox.Mox()
-        self.actionsProvider = self.mocker.CreateMock(ActionsProvider)
-        self.packPlayer.actionsProvider = self.actionsProvider
+        self.input_handler = self.mocker.CreateMock(StubInputHandler)
+        self.packPlayer.input_handler = self.input_handler
 
     def test_should_be_in_the_center(self):
-        assert self.packPlayer.get_location()[0] == 100 / 2 - 16 / 2
+        assert self.packPlayer.location[0] == self.SCREEN_WIDTH / 2 - self.PACK_WIDTH / 2
 
     def test_should_move_to_the_right(self):
-        self.setActionsTo([PlayerAction.MOVE_RIGHT])
-        oldLoc = self.packPlayer.get_location()
-        self.packPlayer.update()
-        assert self.packPlayer.get_location()[0] > oldLoc[0]
+        self.setInputTo(K_RIGHT)
+        oldLoc = self.packPlayer.location
+        self.packPlayer.update(0.1)
+        assert self.packPlayer.location[0] > oldLoc[0]
 
-    def setActionsTo(self, actions):
-        self.actionsProvider.actions().MultipleTimes().AndReturn(actions)
+    def setInputTo(self, inout):
+        self.input_handler.key_down(inout).MultipleTimes().AndReturn(True)
+        self.input_handler.key_down(mox.Not(mox.IsA(input))).MultipleTimes().AndReturn(False)
         self.mocker.ReplayAll()
 
     def test_should_not_pass_the_right_edge_of_the_screen(self):
-        self.setActionsTo([PlayerAction.MOVE_RIGHT])
+        self.setInputTo(K_RIGHT)
         oldLoc = (self.SCREEN_WIDTH - self.PACK_WIDTH,
-                  self.packPlayer.get_location()[1])
-        self.packPlayer.set_location(oldLoc)
-        self.packPlayer.update()
-        assert self.packPlayer.get_location() == oldLoc
+                  self.packPlayer.location[1])
+        self.packPlayer.location = oldLoc
+        self.packPlayer.update(0.1)
+        assert self.packPlayer.location == oldLoc
 
     def test_should_move_to_the_left(self):
-        self.setActionsTo([PlayerAction.MOVE_LEFT])
-        oldLoc = self.packPlayer.get_location()
-        self.packPlayer.update()
-        assert self.packPlayer.get_location()[0] < oldLoc[0]
+        self.setInputTo(K_LEFT)
+        oldLoc = self.packPlayer.location
+        self.packPlayer.update(0.1)
+        assert self.packPlayer.location[0] < oldLoc[0]
 
     def test_should_not_pass_the_left_edge_of_the_screen(self):
-        self.setActionsTo([PlayerAction.MOVE_LEFT])
-        oldLoc = (0, self.packPlayer.get_location()[1])
-        self.packPlayer.set_location(oldLoc)
-        self.packPlayer.update()
-        assert self.packPlayer.get_location() == oldLoc
+        self.setInputTo(K_LEFT)
+        oldLoc = (0, self.packPlayer.location[1])
+        self.packPlayer.location = oldLoc
+        self.packPlayer.update(0.1)
+        assert self.packPlayer.location == oldLoc
