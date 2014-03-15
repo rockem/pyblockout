@@ -12,13 +12,13 @@ class PyGameInputHandler:
         self.input_state.pop(QUIT, None)
         for event in events:
             if event.type == KEYDOWN:
-                self.add_event(KEYDOWN, event.key)
+                self.__add_event(KEYDOWN, event.key)
             elif event.type == KEYUP:
                 self.input_state[KEYDOWN].remove(event.key)
             elif event.type == QUIT:
-                self.add_event(QUIT)
+                self.__add_event(QUIT)
 
-    def add_event(self, type, value=None):
+    def __add_event(self, type, value=None):
         if not type in self.input_state:
             self.input_state[type] = []
         self.input_state[type].append(value)
