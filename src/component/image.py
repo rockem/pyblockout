@@ -8,20 +8,20 @@ class PackImageComponent:
 
     def __init__(self):
         self.image, self.rect = load_image('pack.png')
+        self.sprite = None
 
-    def update(self, sprite_object, *args):
-        if not sprite_object.image:
-            midbottom = sprite_object.rect.midbottom
-            sprite_object.image = self.image
-            # sprite_object.rect.size = self.rect.size
-            sprite_object.rect.midbottom = midbottom
+    def update(self, elapsed_time):
+        if not self.sprite.image:
+            midbottom = self.sprite.rect.midbottom
+            self.sprite.image = self.image
+            self.sprite.rect.midbottom = midbottom
 
 
 class BallImageComponent:
 
     def __init__(self):
         self.image = self.createBallImage()
-        self.rect = self.image.get_rect()
+        self.sprite = None
 
     def createBallImage(self):
         img = pygame.Surface((16, 16))
@@ -29,8 +29,7 @@ class BallImageComponent:
         img = img.convert()
         return img
 
-    def update(self, sprite_object, *args):
-        if not sprite_object.image:
-            sprite_object.image = self.image
-
-
+    def update(self, elapsed_time):
+        if not self.sprite.image:
+            self.sprite.image = self.image
+            print "."  # Weirdest bug ever!

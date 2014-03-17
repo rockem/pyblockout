@@ -5,7 +5,7 @@ __author__ = 'elisegal'
 
 class SpriteObject(pygame.sprite.Sprite):
 
-    components = []
+    _components = []
 
     def __init__(self, *groups):
         pygame.sprite.Sprite.__init__(self, *groups)
@@ -21,9 +21,16 @@ class SpriteObject(pygame.sprite.Sprite):
         self._image = value
         self.rect.size = self.image.get_rect().size
 
+    def set_components(self, value):
+        self._components = value
+        for c in self._components:
+            c.sprite = self
+
+    def get_components(self):
+        return self._components
+
+    components = property(get_components, set_components)
+
     def update(self, *args):
         for c in self.components:
-            c.update(self, *args)
-
-    def location(self, location):
-        self.rect.topleft = location
+            c.update(*args)
