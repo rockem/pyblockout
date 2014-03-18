@@ -40,20 +40,15 @@ class SpriteCreator:
 
 
 class BlockOut:
-    def __init__(self):
-        self.screen = self.create_pygame_screen()
-        self.clock = pygame.time.Clock()
+    def __init__(self, screen):
+        self.screen = screen
         self.background = self.create_background()
         self.input_handler = PyGameInputHandler()
         self.running = True
         self.createAllSprites()
 
-    def create_pygame_screen(self):
-        pygame.init()
-        pygame.display.set_caption("BlockOut")
-        screen = pygame.display.set_mode((800, 600))
-        pygame.mouse.set_visible(False)
-        return screen
+    def create_background(self):
+        return load_image('background.png')[0]
 
     def createAllSprites(self):
         self.all_sprites = pygame.sprite.Group()
@@ -69,19 +64,8 @@ class BlockOut:
     def screenRect(self):
         return self.screen.get_rect()
 
-    def create_background(self):
-        return load_image('background.png')[0]
-
-    def run(self):
-        while self.running:
-            self.elapsed_time = self.clock.tick(60)
-            pygame.display.set_caption("BlockOut [FPS:%s]" % self.clock.get_fps())
-            self.on_events()
-            self.on_update()
-            self.on_render()
-
-    def on_events(self):
-        self.input_handler.update(pygame.event.get())
+    def on_events(self, events):
+        self.input_handler.update(events)
         if self.should_quit():
             self.quit()
 
@@ -91,8 +75,8 @@ class BlockOut:
     def quit(self):
         self.running = False
 
-    def on_update(self):
-        self.all_sprites.update(self.elapsed_time / 1000.0)
+    def on_update(self, elapsed_time):
+        self.all_sprites.update(elapsed_time / 1000.0)
 
     def on_render(self):
         self.screen.blit(self.background, (0, 0))

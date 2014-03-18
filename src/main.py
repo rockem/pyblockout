@@ -1,39 +1,28 @@
-# def create_background(screen):
-#     background = pygame.Surface(screen.get_size())
-#     background = background.convert()
-#     background.fill((0, 0, 0))
-#     return background
-#
-#
-# def main():
-#     pygame.init()
-#     screen = pygame.display.set_mode((800, 600))
-#     pygame.display.set_caption("BlockOut")
-#
-#     actionsProvider = UserActionsProvider()
-#
-#     clock = pygame.time.Clock()
-#     control = PackControl((screen.get_rect().width, screen.get_rect().height))
-#     control.actionsProvider = actionsProvider
-#     pack = PackSprite(control)
-#     allSprites = pygame.sprite.RenderPlain(pack)
-#
-#     background = create_background(screen)
-#     while True:
-#         clock.tick(120)
-#         for event in pygame.event.get():
-#             if event.type == QUIT:
-#                 return
-#             elif event.type == KEYDOWN and event.key == K_ESCAPE:
-#                 return
-#             else:
-#                 actionsProvider.handle_event(event)
-#
-#         allSprites.update()
-#         screen.blit(background, (0, 0))
-#         allSprites.draw(screen)
-#         pygame.display.flip()
+import pygame
 from BlockOut import BlockOut
 
+
+class PyGameMain:
+
+    def __init__(self):
+        self.blockout = BlockOut(self.create_pygame_screen())
+        self.clock = pygame.time.Clock()
+
+    def create_pygame_screen(self):
+        pygame.init()
+        pygame.display.set_caption("BlockOut")
+        screen = pygame.display.set_mode((640, 480))
+        pygame.mouse.set_visible(False)
+        return screen
+
+    def run(self):
+        while self.blockout.running:
+            elapsed_time = self.clock.tick(60)
+            pygame.display.set_caption("BlockOut [FPS:%s]" % self.clock.get_fps())
+            self.blockout.on_events(pygame.event.get())
+            self.blockout.on_update(elapsed_time)
+            self.blockout.on_render()
+
+
 if __name__ == '__main__':
-    BlockOut().run()
+    PyGameMain().run()
