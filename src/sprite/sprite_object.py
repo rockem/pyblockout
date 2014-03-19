@@ -1,15 +1,17 @@
 import pygame
+import pyglet
 
 __author__ = 'elisegal'
 
 
-class SpriteObject(pygame.sprite.Sprite):
+class SpriteObject(pyglet.sprite.Sprite):
 
     _components = []
 
-    def __init__(self, *groups):
-        pygame.sprite.Sprite.__init__(self, *groups)
-        self.rect = pygame.Rect(0, 0, 0, 0)
+    def __init__(self, renderer, group):
+        pyglet.sprite.Sprite.__init__(self, renderer.image, batch=group)
+        self.renderer = renderer
+        #self.rect = pygame.Rect(0, 0, 0, 0)
         self._image = None
 
     @property

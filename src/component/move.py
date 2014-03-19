@@ -1,3 +1,6 @@
+import pygame
+from rect import Rect
+
 __author__ = 'elisegal'
 
 
@@ -8,7 +11,10 @@ class ClampComponent:
         self.sprite = None
 
     def update(self, elapsed_time):
-        self.sprite.rect.clamp_ip(self.rect)
+        sprite_rect = Rect(0, 0, self.sprite.width, self.sprite.height)
+        sprite_rect.center = (self.sprite.x, self.sprite.y)
+        sprite_rect.clamp_ip(self.rect)
+        self.sprite.position = sprite_rect.center
 
 
 class BallMoveComponent:
@@ -18,6 +24,6 @@ class BallMoveComponent:
         self.sprite = None
 
     def update(self, elapsed_time):
-        topleft = self.pack.rect.topleft
-        self.sprite.rect.midbottom = (topleft[0] + self.pack.rect.width / 2, topleft[1])
+        self.sprite.x = self.pack.x
+        self.sprite.y = self.pack.y + self.pack.height / 2 + self.sprite.height / 2
 

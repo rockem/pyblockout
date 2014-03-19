@@ -1,12 +1,12 @@
-import pygame
 from pygame.constants import KEYDOWN, QUIT, KEYUP
 
 __author__ = 'elisegal'
 
 
 class PyGameInputHandler:
-    def __init__(self):
+    def __init__(self, key_hanlder):
         self.input_state = {}
+        self.key_handler = key_hanlder
 
     def update(self, events):
         self.input_state.pop(QUIT, None)
@@ -30,4 +30,17 @@ class PyGameInputHandler:
 
     def input_type(self, type):
         return type in self.input_state.keys()
+
+
+class PygletInputHandler:
+
+    def __init__(self, key_handler):
+        self.key_handler = key_handler
+
+    def key_down(self, k):
+        return self.key_handler[k]
+
+    def input_type(self, type):
+        pass
+        #return type in self.input_state.keys()
 
