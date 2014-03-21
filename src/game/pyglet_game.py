@@ -43,7 +43,10 @@ class GameFactory:
         self.screen = window
 
     def load_image(self, img_name):
-        return pyglet.resource.image(img_name)
+        image = pyglet.resource.image(img_name)
+        image.anchor_x = image.width / 2
+        image.anchor_y = image.height / 2
+        return image
 
     def create_batch(self):
         return pyglet.graphics.Batch()

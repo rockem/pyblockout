@@ -68,11 +68,6 @@ class BlockOut:
 
     def on_events(self, events):
         self.input_handler.update(events)
-        if self.should_quit():
-            self.quit()
-
-    def should_quit(self):
-        return self.input_handler.input_type(QUIT) or self.input_handler.key_down(K_ESCAPE)
 
     def quit(self):
         self.running = False
@@ -82,5 +77,5 @@ class BlockOut:
         self.ball.update(elapsed_time)
 
     def on_render(self):
-        self.background.blit(0, 0)
+        self.background.blit(self.game_factory.screen.width / 2, self.game_factory.screen.height / 2)
         self.all_sprites.draw()
