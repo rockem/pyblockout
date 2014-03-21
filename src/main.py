@@ -9,6 +9,7 @@ class PygletMain(pyglet.window.Window):
         super(PygletMain, self).__init__(800, 600)
         key_handler = pyglet.window.key.KeyStateHandler()
         self.push_handlers(key_handler)
+        self.set_mouse_visible(False)
         self.blockout = BlockOut(GameFactory(self), PygletInputHandler(key_handler))
 
     def run(self):
