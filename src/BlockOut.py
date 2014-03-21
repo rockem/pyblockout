@@ -66,9 +66,6 @@ class BlockOut:
     def screenRect(self):
         return Rect(0, 0, self.game_factory.screen.get_size()[0], self.game_factory.screen.get_size()[1])
 
-    def on_events(self, events):
-        self.input_handler.update(events)
-
     def quit(self):
         self.running = False
 
