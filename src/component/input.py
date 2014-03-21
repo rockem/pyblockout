@@ -1,5 +1,4 @@
-from pygame.constants import K_RIGHT, K_LEFT
-from pyglet.window import key
+from game.key import RIGHT, LEFT
 
 __author__ = 'elisegal'
 
@@ -15,8 +14,8 @@ class UserInputComponent:
         self.sprite.x = int(self.sprite.x + self.get_x_delta(self.PACK_SPEED * elapsed_time))
 
     def get_x_delta(self, velocity):
-        if self.input_handler.key_down(key.RIGHT):
+        if self.input_handler.key_down(RIGHT):
             return velocity
-        elif self.input_handler.key_down(key.LEFT):
+        elif self.input_handler.key_down(LEFT):
             return -velocity
         return 0

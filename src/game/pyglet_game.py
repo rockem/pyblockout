@@ -1,5 +1,5 @@
-import pygame
 import pyglet
+from game import key
 
 __author__ = 'elisegal'
 
@@ -11,7 +11,6 @@ class SpriteObject(pyglet.sprite.Sprite):
     def __init__(self, renderer, group):
         pyglet.sprite.Sprite.__init__(self, renderer.image, batch=group)
         self.renderer = renderer
-        #self.rect = pygame.Rect(0, 0, 0, 0)
         self._image = None
 
     @property
@@ -36,3 +35,37 @@ class SpriteObject(pyglet.sprite.Sprite):
     def update(self, *args):
         for c in self.components:
             c.update(*args)
+
+
+class GameFactory:
+
+    def __init__(self, window):
+        self.screen = window
+
+    def load_image(self, img_name):
+        return pyglet.resource.image(img_name)
+
+    def create_batch(self):
+        return pyglet.graphics.Batch()
+
+    def create_sprite_object(self, renderer, batch):
+        return SpriteObject(renderer, batch)
+
+
+class PygletInputHandler:
+
+    pygletKeyDict = {
+        key.LEFT: pyglet.window.key.LEFT,
+        key.RIGHT: pyglet.window.key.RIGHT,
+        key.SPACE: pyglet.window.key.SPACE
+    }
+
+    def __init__(self, key_handler):
+        self.key_handler = key_handler
+
+    def key_down(self, k):
+        return self.key_handler[self.pygletKeyDict[k]]
+
+    def input_type(self, type):
+        pass
+        #return type in self.input_state.keys()
