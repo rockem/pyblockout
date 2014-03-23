@@ -38,21 +38,28 @@ class ClampComponent(GameComponent):
 class BallMoveComponent(GameComponent):
     BALL_VELOCITY = 300
 
-    _playState = False
-
     def __init__(self, pack, play_rect):
         self._pack = pack
         self.play_rect = play_rect
+        self.init()
+
+    def init(self):
+        self._play_state = False
         self._x_dir = 1
         self._y_dir = 1
 
     def update(self, elapsed_time):
-        if not self._playState:
+        if self.hit_bottom():
+            self.init()
+        if not self._play_state:
             self.keep_ball_on_pack()
         else:
             self.update_direction()
             self.sprite.x += self._x_dir * self.BALL_VELOCITY * elapsed_time
             self.sprite.y += self._y_dir * self.BALL_VELOCITY * elapsed_time
+
+    def hit_bottom(self):
+        return self.play_rect.bottom == self.sprite.get_rect().bottom
 
     def keep_ball_on_pack(self):
         self.sprite.x = self._pack.x
@@ -66,7 +73,7 @@ class BallMoveComponent(GameComponent):
             self._y_dir *= -1
 
     def play(self):
-        self._playState = True
+        self._play_state = True
 
     def stay(self):
-        self._playState = False
+        self._play_state = False

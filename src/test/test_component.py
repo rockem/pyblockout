@@ -36,19 +36,7 @@ class StubSprite(object):
         return Rect(self.x - self.width / 2, self.y - self.height / 2, self.width, self.height)
 
 
-class TestBallMoveComponent:
-
-    SPRITE_POS = (50, 50)
-    PLAY_RECT = Rect(0, 0, 100, 100)
-
-    def setup(self):
-        self.sprite = StubSprite(self.SPRITE_POS[0], self.SPRITE_POS[1])
-        self.move_comp = BallMoveComponent(StubSprite(70, 70), self.PLAY_RECT)
-        self.move_comp.sprite = self.sprite
-        self.move_comp.play()
-
-
-class TestBallMoveComponent_Play:
+class AbstractTestBallMoveComponent(object):
 
     SPRITE_POS = (50, 50)
     PLAY_RECT = Rect(0, 0, 100, 100)
@@ -59,13 +47,19 @@ class TestBallMoveComponent_Play:
         self.move_comp = BallMoveComponent(self.pack, self.PLAY_RECT)
         self.move_comp.sprite = self.sprite
 
-    def test_should_set_position_above_pack(self):
-        self.update()
+    def assert_ball_on_pack(self):
         assert self.sprite.x == self.pack.x
         assert self.sprite.y == self.pack.get_rect().top + self.sprite.height / 2
 
     def update(self):
         self.move_comp.update(1)
+
+
+class TestBallMoveComponent_Play(AbstractTestBallMoveComponent):
+
+    def setup(self):
+        super(TestBallMoveComponent_Play, self).setup()
+        self.move_comp.play()
 
     def test_should_move_ball(self):
         old_pos = self.sprite.position
@@ -73,8 +67,6 @@ class TestBallMoveComponent_Play:
         assert self.sprite.position != old_pos
 
     def test_should_change_horizontal_direction(self):
-        self.move_comp.play()
-        old_x = self.sprite.x
         self.sprite.x = self.PLAY_RECT.right - self.sprite.width / 2
         self.update()
         assert self.sprite.get_rect().right < self.PLAY_RECT.right
@@ -83,10 +75,18 @@ class TestBallMoveComponent_Play:
         assert self.sprite.get_rect().left > 0
 
     def test_should_change_vertical_direction(self):
-        self.move_comp.play()
         self.sprite.y = self.PLAY_RECT.top - self.sprite.height / 2
         self.update()
         assert self.sprite.get_rect().top < self.PLAY_RECT.top
 
+    def test_should_stay_when_ball_hit_bottom_of_play_rect(self):
+        self.sprite.y = self.PLAY_RECT.bottom + self.sprite.height / 2
+        self.update()
+        self.assert_ball_on_pack()
 
 
+class TestBallMoveComponent_Stay(AbstractTestBallMoveComponent):
+
+    def test_should_set_position_above_pack(self):
+        self.update()
+        self.assert_ball_on_pack()
