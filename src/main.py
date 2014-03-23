@@ -1,6 +1,7 @@
 import pyglet
-from BlockOut import BlockOut
-from game.pyglet_game import GameFactory, PygletInputHandler
+
+from blockout import BlockOut
+from pyglet_game import GameFactory, PygletInputHandler
 
 
 class PygletMain(pyglet.window.Window):

@@ -1,5 +1,8 @@
 import pyglet
-from game import key
+
+import key
+from rect import Rect
+
 
 __author__ = 'elisegal'
 
@@ -12,15 +15,6 @@ class SpriteObject(pyglet.sprite.Sprite):
         pyglet.sprite.Sprite.__init__(self, renderer.image, batch=group)
         self.renderer = renderer
         self._image = None
-
-    @property
-    def image(self):
-        return self._image
-
-    @image.setter
-    def image(self, value):
-        self._image = value
-        self.rect.size = self.image.get_rect().size
 
     def set_components(self, value):
         self._components = value
@@ -35,6 +29,11 @@ class SpriteObject(pyglet.sprite.Sprite):
     def update(self, *args):
         for c in self.components:
             c.update(*args)
+
+    def get_rect(self):
+        r = Rect(0, 0, self.width, self.height)
+        r.center = (self.x, self.y)
+        return r
 
 
 class GameFactory:
@@ -71,4 +70,3 @@ class PygletInputHandler:
 
     def input_type(self, type):
         pass
-        #return type in self.input_state.keys()
