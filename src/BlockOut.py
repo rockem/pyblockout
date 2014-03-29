@@ -74,10 +74,6 @@ class BlockOut:
         for go in self.game_objects:
             go.update(elapsed_time)
 
-    def on_render(self):
-        self.background.blit(self.game_factory.screen.width / 2, self.game_factory.screen.height / 2)
-        self.sprites_batch.draw()
-
     def detect_collisions(self):
         for i in xrange(len(self.game_objects)):
             for j in xrange(i + 1, len(self.game_objects)):
@@ -87,5 +83,6 @@ class BlockOut:
                     obj_1.handle_collision_with(obj_2)
                     obj_2.handle_collision_with(obj_1)
 
-    def create_sprite(self, image_name):
-        pass
+    def on_render(self):
+        self.background.blit(self.game_factory.screen.width / 2, self.game_factory.screen.height / 2)
+        self.sprites_batch.draw()

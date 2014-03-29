@@ -78,6 +78,9 @@ class TestBallPhysicsComponent_Play(AbstractTestBallPhysicsComponent):
         self.update()
         self.assert_ball_on_pack()
 
+    def test_should_change_vertical_dir_on_collision(self):
+        self.game_object.y = self.PLAY_RECT.top - self.game_object.height / 2
+
 
 class TestBallPhysicsComponent_Stay(AbstractTestBallPhysicsComponent):
 

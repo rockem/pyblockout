@@ -1,3 +1,4 @@
+from event import EventHook
 from rect import Rect
 
 __author__ = 'elisegal'
@@ -8,6 +9,9 @@ class GameObject(object):
     y_velocity = 0
     _components = []
     _new_position = (0, 0)
+
+    def __init__(self):
+        self.on_collision = EventHook()
 
     def set_components(self, value):
         self._components = value
@@ -51,13 +55,13 @@ class GameObject(object):
 
     position = property(_get_position, _set_position)
 
-    def get_new_rect(self):
-        r = self.get_rect()
-        r.center = self._new_position
-        return r
-
     def get_rect(self):
         pass
+
+    def handle_collision_with(self, other_obj):
+        self.on_collision.fire(other_obj)
+
+
 
 
 class SpriteGameObject(GameObject):
@@ -81,5 +85,10 @@ class SpriteGameObject(GameObject):
 
     def _set_y(self, value):
         self._sprite.y = value
+
+    def collides_with(self, other_obj):
+        return self.get_rect().intersects(other_obj.get_rect())
+
+
 
 

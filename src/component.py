@@ -47,6 +47,10 @@ class BallPhysicsComponent(GameComponent):
         self._pack = pack
         self.play_rect = play_rect
         self._play_state = False
+        self.game_object.on_collision += self.on_collision_with
+
+    def on_collision_with(self, other_object):
+        pass
 
     def update(self, elapsed_time):
         if self.hit_bottom():
