@@ -1,10 +1,13 @@
-from component import BallMoveComponent
+from component import BallPhysicsComponent
 from rect import Rect
 
 __author__ = 'elisegal'
 
 
-class StubSprite(object):
+class StubGameObject(object):
+
+    x_velocity = 0
+    y_velocity = 0
 
     def __init__(self, x, y):
         self._x, self._y = x, y
@@ -23,69 +26,60 @@ class StubSprite(object):
     def set_height(self, value): self._height = value
     height = property(lambda self: self._height, set_height)
 
-    def set_pos(self, pos):
-        self._x = pos[0]
-        self._Y = pos[1]
-
-    def get_pos(self):
-        return self._x, self._y
-
-    position = property(get_pos, set_pos)
-
     def get_rect(self):
         return Rect(self.x - self.width / 2, self.y - self.height / 2, self.width, self.height)
 
 
-class AbstractTestBallMoveComponent(object):
+class AbstractTestBallPhysicsComponent(object):
 
     SPRITE_POS = (50, 50)
     PLAY_RECT = Rect(0, 0, 100, 100)
 
     def setup(self):
-        self.sprite = StubSprite(self.SPRITE_POS[0], self.SPRITE_POS[1])
-        self.pack = StubSprite(70, 70)
-        self.move_comp = BallMoveComponent(self.pack, self.PLAY_RECT)
-        self.move_comp.sprite = self.sprite
+        self.game_object = StubGameObject(self.SPRITE_POS[0], self.SPRITE_POS[1])
+        self.pack = StubGameObject(70, 70)
+        self.move_comp = BallPhysicsComponent(self.pack, self.PLAY_RECT)
+        self.move_comp.game_object = self.game_object
 
     def assert_ball_on_pack(self):
-        assert self.sprite.x == self.pack.x
-        assert self.sprite.y == self.pack.get_rect().top + self.sprite.height / 2
+        assert self.game_object.x == self.pack.x
+        assert self.game_object.y == self.pack.get_rect().top + self.game_object.height / 2
 
     def update(self):
         self.move_comp.update(1)
 
 
-class TestBallMoveComponent_Play(AbstractTestBallMoveComponent):
+class TestBallPhysicsComponent_Play(AbstractTestBallPhysicsComponent):
 
     def setup(self):
-        super(TestBallMoveComponent_Play, self).setup()
+        super(TestBallPhysicsComponent_Play, self).setup()
         self.move_comp.play()
 
     def test_should_move_ball(self):
-        old_pos = self.sprite.position
         self.update()
-        assert self.sprite.position != old_pos
+        assert self.game_object.x_velocity != 0
+        assert self.game_object.y_velocity != 0
 
     def test_should_change_horizontal_direction(self):
-        self.sprite.x = self.PLAY_RECT.right - self.sprite.width / 2
+        self.game_object.x = self.PLAY_RECT.right - self.game_object.width / 2
         self.update()
-        assert self.sprite.get_rect().right < self.PLAY_RECT.right
-        self.sprite.x = self.sprite.width / 2
+        assert self.game_object.x_velocity < 0
+        self.game_object.x = self.game_object.width / 2
         self.update()
-        assert self.sprite.get_rect().left > 0
+        assert self.game_object.x_velocity > 0
 
     def test_should_change_vertical_direction(self):
-        self.sprite.y = self.PLAY_RECT.top - self.sprite.height / 2
+        self.game_object.y = self.PLAY_RECT.top - self.game_object.height / 2
         self.update()
-        assert self.sprite.get_rect().top < self.PLAY_RECT.top
+        assert self.game_object.y_velocity < 0
 
     def test_should_stay_when_ball_hit_bottom_of_play_rect(self):
-        self.sprite.y = self.PLAY_RECT.bottom + self.sprite.height / 2
+        self.game_object.y = self.PLAY_RECT.bottom + self.game_object.height / 2
         self.update()
         self.assert_ball_on_pack()
 
 
-class TestBallMoveComponent_Stay(AbstractTestBallMoveComponent):
+class TestBallPhysicsComponent_Stay(AbstractTestBallPhysicsComponent):
 
     def test_should_set_position_above_pack(self):
         self.update()

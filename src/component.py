@@ -4,8 +4,13 @@ __author__ = 'elisegal'
 
 
 class GameComponent:
+    game_object = None
 
-    sprite = None
+
+class SimpleMoveComponent(GameComponent):
+    def update(self, elapsed_time):
+        self.game_object.x += self.game_object.x_velocity * elapsed_time
+        self.game_object.y += self.game_object.y_velocity * elapsed_time
 
 
 class UserInputComponent(GameComponent):
@@ -15,13 +20,13 @@ class UserInputComponent(GameComponent):
         self.input_handler = input_handler
 
     def update(self, elapsed_time):
-        self.sprite.x = int(self.sprite.x + self.get_x_delta(self.PACK_SPEED * elapsed_time))
+        self.game_object.x_velocity = self._get_x_velocity()
 
-    def get_x_delta(self, velocity):
+    def _get_x_velocity(self):
         if self.input_handler.key_down(RIGHT):
-            return velocity
+            return self.PACK_SPEED
         elif self.input_handler.key_down(LEFT):
-            return -velocity
+            return -self.PACK_SPEED
         return 0
 
 
@@ -30,50 +35,53 @@ class ClampComponent(GameComponent):
         self.rect = area_rect
 
     def update(self, elapsed_time):
-        sprite_rect = self.sprite.get_rect()
+        sprite_rect = self.game_object.get_rect()
         sprite_rect.clamp_ip(self.rect)
-        self.sprite.position = sprite_rect.center
+        self.game_object.position = sprite_rect.center
 
 
-class BallMoveComponent(GameComponent):
+class BallPhysicsComponent(GameComponent):
     BALL_VELOCITY = 300
 
     def __init__(self, pack, play_rect):
         self._pack = pack
         self.play_rect = play_rect
-        self.init()
-
-    def init(self):
         self._play_state = False
-        self._x_dir = 1
-        self._y_dir = 1
 
     def update(self, elapsed_time):
         if self.hit_bottom():
-            self.init()
+            self.stay()
         if not self._play_state:
             self.keep_ball_on_pack()
         else:
             self.update_direction()
-            self.sprite.x += self._x_dir * self.BALL_VELOCITY * elapsed_time
-            self.sprite.y += self._y_dir * self.BALL_VELOCITY * elapsed_time
 
     def hit_bottom(self):
-        return self.play_rect.bottom == self.sprite.get_rect().bottom
-
-    def keep_ball_on_pack(self):
-        self.sprite.x = self._pack.x
-        self.sprite.y = self._pack.y + self._pack.height / 2 + self.sprite.height / 2
-
-    def update_direction(self):
-        if self.play_rect.right == self.sprite.get_rect().right or \
-                        self.play_rect.x == self.sprite.get_rect().left:
-            self._x_dir *= -1
-        if self.play_rect.top == self.sprite.get_rect().top:
-            self._y_dir *= -1
-
-    def play(self):
-        self._play_state = True
+        return self.play_rect.bottom == self.game_object.get_rect().bottom
 
     def stay(self):
-        self._play_state = False
+        self._set_play_state(False)
+
+    def _set_play_state(self, state):
+        self._play_state = state
+        velocity = 0
+        if state:
+            velocity = self.BALL_VELOCITY
+        self.game_object.x_velocity = velocity
+        self.game_object.y_velocity = velocity
+
+    def keep_ball_on_pack(self):
+        self.game_object.x = self._pack.x
+        self.game_object.y = self._pack.get_rect().top + self.game_object.get_rect().width / 2
+
+    def update_direction(self):
+        if self.play_rect.right == self.game_object.get_rect().right \
+                or self.play_rect.x == self.game_object.get_rect().left:
+            self.game_object.x_velocity *= -1
+        if self.play_rect.top == self.game_object.get_rect().top:
+            self.game_object.y_velocity *= -1
+
+    def play(self):
+        self._set_play_state(True)
+
+
