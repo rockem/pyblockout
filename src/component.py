@@ -3,8 +3,20 @@ from key import RIGHT, LEFT
 __author__ = 'elisegal'
 
 
-class GameComponent:
-    game_object = None
+class GameComponent(object):
+
+    _game_object = None
+
+    game_object = property(
+        lambda self: self._get_game_object(),
+        lambda self, go: self._set_game_object(go)
+    )
+
+    def _get_game_object(self):
+        return self._game_object
+
+    def _set_game_object(self, go):
+        self._game_object = go
 
 
 class SimpleMoveComponent(GameComponent):
@@ -47,10 +59,14 @@ class BallPhysicsComponent(GameComponent):
         self._pack = pack
         self.play_rect = play_rect
         self._play_state = False
+
+    def _set_game_object(self, go):
+        super(BallPhysicsComponent, self)._set_game_object(go)
         self.game_object.on_collision += self.on_collision_with
 
     def on_collision_with(self, other_object):
-        pass
+        if other_object.get_rect().left <= self.game_object.x <= other_object.get_rect().right:
+            self.game_object.y_velocity *= -1
 
     def update(self, elapsed_time):
         if self.hit_bottom():

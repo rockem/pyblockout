@@ -68,7 +68,7 @@ class BlockOut:
         if self.input_handler.key_down(SPACE):
             self.ball_physics.play()
         self.update_game_objects(elapsed_time)
-        # self.detect_collisions()
+        self.detect_collisions()
 
     def update_game_objects(self, elapsed_time):
         for go in self.game_objects:

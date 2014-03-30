@@ -62,11 +62,10 @@ class GameObject(object):
         self.on_collision.fire(other_obj)
 
 
-
-
 class SpriteGameObject(GameObject):
 
     def __init__(self, sprite):
+        super(SpriteGameObject, self).__init__()
         self._sprite = sprite
 
     def get_rect(self):

@@ -1,15 +1,17 @@
 from component import BallPhysicsComponent
+from game import GameObject
 from rect import Rect
 
 __author__ = 'elisegal'
 
 
-class StubGameObject(object):
+class StubGameObject(GameObject):
 
     x_velocity = 0
     y_velocity = 0
 
     def __init__(self, x, y):
+        super(StubGameObject, self).__init__()
         self._x, self._y = x, y
         self._width, self._height = 10, 10
 
@@ -32,11 +34,11 @@ class StubGameObject(object):
 
 class AbstractTestBallPhysicsComponent(object):
 
-    SPRITE_POS = (50, 50)
+    OBJECT_POS = (50, 50)
     PLAY_RECT = Rect(0, 0, 100, 100)
 
     def setup(self):
-        self.game_object = StubGameObject(self.SPRITE_POS[0], self.SPRITE_POS[1])
+        self.game_object = StubGameObject(self.OBJECT_POS[0], self.OBJECT_POS[1])
         self.pack = StubGameObject(70, 70)
         self.move_comp = BallPhysicsComponent(self.pack, self.PLAY_RECT)
         self.move_comp.game_object = self.game_object
@@ -79,7 +81,10 @@ class TestBallPhysicsComponent_Play(AbstractTestBallPhysicsComponent):
         self.assert_ball_on_pack()
 
     def test_should_change_vertical_dir_on_collision(self):
-        self.game_object.y = self.PLAY_RECT.top - self.game_object.height / 2
+        self.game_object.y_velocity = 1
+        self.game_object.handle_collision_with(StubGameObject(self.game_object.x, self.game_object.get_rect().top + 5))
+        self.update()
+        assert self.game_object.y_velocity == -1
 
 
 class TestBallPhysicsComponent_Stay(AbstractTestBallPhysicsComponent):
