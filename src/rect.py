@@ -84,9 +84,9 @@ class Rect(object):
         if self._y + self._height > rect.y + rect.height: self._y = rect.y + rect.height - self._height
 
     def intersects(self, other):
-        if self._x + self._width <= other.x \
-                or other.x + other.width <= self._x \
-                or self._y + self._height <= other.y \
-                or other.y + other.height <= self._y:
+        if self._x + self._width < other.x \
+                or other.x + other.width < self._x \
+                or self._y + self._height < other.y \
+                or other.y + other.height < self._y:
             return False
         return True

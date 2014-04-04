@@ -3,6 +3,8 @@ from pyglet.sprite import Sprite
 
 BALL_IMAGE = 'ball.png'
 PACK_IMAGE = 'pack.png'
+RED_BLOCK_IMAGE = 'red_block.png'
+WHITE_BLOCK_IMAGE = 'white_block.png'
 
 
 class SpriteFactory:
@@ -24,3 +26,9 @@ class SpriteFactory:
 
     def create_pack_sprite(self):
         return self.create_simple_sprite(PACK_IMAGE)
+
+    def create_red_block(self):
+        return self.create_simple_sprite(RED_BLOCK_IMAGE)
+
+    def create_white_block(self):
+        return self.create_simple_sprite(WHITE_BLOCK_IMAGE)
