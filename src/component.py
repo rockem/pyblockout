@@ -26,7 +26,7 @@ class SimpleMoveComponent(GameComponent):
 
 
 class UserInputComponent(GameComponent):
-    PACK_SPEED = 250
+    PACK_SPEED = 300
 
     def __init__(self, input_handler):
         self.input_handler = input_handler
@@ -53,7 +53,7 @@ class ClampComponent(GameComponent):
 
 
 class BallPhysicsComponent(GameComponent):
-    BALL_VELOCITY = 300
+    BALL_VELOCITY = 280
 
     def __init__(self, pack, play_rect):
         self._pack = pack
@@ -65,11 +65,51 @@ class BallPhysicsComponent(GameComponent):
         self.game_object.on_collision += self.on_collision_with
 
     def on_collision_with(self, other_object):
-        if other_object.get_rect().left <= self.game_object.x <= other_object.get_rect().right:
-            self.game_object.y_velocity *= -1
+        if self.is_top_bottom_collision(other_object):
+            self.handle_top_bottom_collision(other_object)
+        elif self.is_right_left_collision(other_object):
+            self.handle_left_right_collision(other_object)
+        else:
+            self.handle_corners_collision(other_object)
+
+    def is_top_bottom_collision(self, other_object):
+        return other_object.get_rect().left <= self.game_object.x <= other_object.get_rect().right
+
+    def minus(self, number):
+        return -abs(self.game_object.y_velocity)
+
+    def handle_top_bottom_collision(self, other_object):
+        abs_y_velocity = abs(self.game_object.y_velocity)
+        if other_object.y > self.game_object.y:
+            self.game_object.y_velocity = -abs_y_velocity
+        else:
+            self.game_object.y_velocity = abs_y_velocity
+
+    def is_right_left_collision(self, other_object):
+        return other_object.get_rect().top <= self.game_object.y <= other_object.get_rect().bottom
+
+    def handle_left_right_collision(self, other_object):
+        abs_x_velocity = abs(self.game_object.x_velocity)
+        if other_object.x > self.game_object.x:
+            self.game_object.x_velocity = -abs_x_velocity
+        else:
+            self.game_object.x_velocity = abs_x_velocity
+
+    def handle_corners_collision(self, other_object):
+        abs_x_velocity = abs(self.game_object.x_velocity)
+        abs_y_velocity = abs(self.game_object.y_velocity)
+        if other_object.x > self.game_object.x:
+            self.game_object.y_velocity = -abs_y_velocity
+        else:
+            self.game_object.y_velocity = abs_y_velocity
+        if other_object.y > self.game_object.y:
+            self.game_object.x_velocity = abs_x_velocity
+        else:
+            self.game_object.x_velocity = -abs_x_velocity
 
     def update(self, elapsed_time):
         if self.hit_bottom():
+            self.stay()
             self.stay()
         if not self._play_state:
             self.keep_ball_on_pack()

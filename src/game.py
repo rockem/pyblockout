@@ -115,9 +115,6 @@ class GameObjectCreator:
 
 class SpriteGameObjectCreator(GameObjectCreator):
 
-
-
-
     def __init__(self, sprite):
         self._sprite = sprite
 

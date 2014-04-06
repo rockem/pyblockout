@@ -84,7 +84,22 @@ class TestBallPhysicsComponent_Play(AbstractTestBallPhysicsComponent):
         self.game_object.y_velocity = 1
         self.game_object.handle_collision_with(StubGameObject(self.game_object.x, self.game_object.get_rect().top + 5))
         self.update()
-        assert self.game_object.y_velocity == -1
+        assert self.game_object.y_velocity < 0
+
+    def test_should_change_horizontal_dir_on_collision(self):
+        self.game_object.x_velocity = 1
+        self.game_object.handle_collision_with(StubGameObject(self.game_object.get_rect().left - 5, self.game_object.y))
+        self.update()
+        assert self.game_object.x_velocity < 0
+
+    def test_should_revert_dir_on_collision(self):
+        self.game_object.x_velocity = 1
+        self.game_object.y_velocity = 1
+        self.game_object.handle_collision_with(
+            StubGameObject(self.game_object.get_rect().right + 5, self.game_object.get_rect().bottom - 5))
+        self.update()
+        assert self.game_object.x_velocity < 0
+        assert self.game_object.y_velocity < 0
 
 
 class TestBallPhysicsComponent_Stay(AbstractTestBallPhysicsComponent):
