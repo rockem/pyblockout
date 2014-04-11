@@ -1,4 +1,5 @@
-from component import BallPhysicsComponent
+from nose.tools import assert_less, assert_true, assert_false, assert_greater, assert_equals, assert_not_equal
+from component import BallPhysicsComponent, BlockCollisionComponent
 from game import GameObject
 from rect import Rect
 
@@ -7,26 +8,10 @@ __author__ = 'elisegal'
 
 class StubGameObject(GameObject):
 
-    x_velocity = 0
-    y_velocity = 0
-
     def __init__(self, x, y):
         super(StubGameObject, self).__init__()
         self._x, self._y = x, y
-        self._width, self._height = 10, 10
-
-    def set_x(self, value):
-        self._x = value
-    x = property(lambda self: self._x, set_x)
-
-    def set_y(self, value): self._y = value
-    y = property(lambda self: self._y, set_y)
-
-    def set_width(self, value): self._width = value
-    width = property(lambda self: self._width, set_width)
-
-    def set_height(self, value): self._height = value
-    height = property(lambda self: self._height, set_height)
+        self.width, self.height = 10, 10
 
     def get_rect(self):
         return Rect(self.x - self.width / 2, self.y - self.height / 2, self.width, self.height)
@@ -59,8 +44,8 @@ class TestBallPhysicsComponent_Play(AbstractTestBallPhysicsComponent):
 
     def test_should_move_ball(self):
         self.update()
-        assert self.game_object.x_velocity != 0
-        assert self.game_object.y_velocity != 0
+        assert_not_equal(self.game_object.x_velocity, 0)
+        assert_not_equal(self.game_object.y_velocity, 0)
 
     def test_should_change_horizontal_direction(self):
         self.game_object.x = self.PLAY_RECT.right - self.game_object.width / 2
@@ -88,7 +73,7 @@ class TestBallPhysicsComponent_Play(AbstractTestBallPhysicsComponent):
 
     def test_should_change_horizontal_dir_on_collision(self):
         self.game_object.x_velocity = 1
-        self.game_object.handle_collision_with(StubGameObject(self.game_object.get_rect().left - 5, self.game_object.y))
+        self.game_object.handle_collision_with(StubGameObject(self.game_object.get_rect().right + 5, self.game_object.y))
         self.update()
         assert self.game_object.x_velocity < 0
 
@@ -98,8 +83,8 @@ class TestBallPhysicsComponent_Play(AbstractTestBallPhysicsComponent):
         self.game_object.handle_collision_with(
             StubGameObject(self.game_object.get_rect().right + 5, self.game_object.get_rect().bottom - 5))
         self.update()
-        assert self.game_object.x_velocity < 0
-        assert self.game_object.y_velocity < 0
+        assert_less(self.game_object.x_velocity, 0)
+        assert_equals(self.game_object.y_velocity, 1)
 
 
 class TestBallPhysicsComponent_Stay(AbstractTestBallPhysicsComponent):
@@ -107,3 +92,12 @@ class TestBallPhysicsComponent_Stay(AbstractTestBallPhysicsComponent):
     def test_should_set_position_above_pack(self):
         self.update()
         self.assert_ball_on_pack()
+
+
+class TestBlockCollisionComponent(object):
+
+    def test_should_be_dead_when_collides(self):
+        component = BlockCollisionComponent()
+        component.game_object = StubGameObject(0, 0)
+        component.on_collision_with(None)
+        assert_false(component.game_object.alive)

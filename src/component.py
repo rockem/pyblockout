@@ -18,6 +18,9 @@ class GameComponent(object):
     def _set_game_object(self, go):
         self._game_object = go
 
+    def update(self, elapsed_time):
+        pass
+
 
 class SimpleMoveComponent(GameComponent):
     def update(self, elapsed_time):
@@ -86,7 +89,7 @@ class BallPhysicsComponent(GameComponent):
             self.game_object.y_velocity = abs_y_velocity
 
     def is_right_left_collision(self, other_object):
-        return other_object.get_rect().top <= self.game_object.y <= other_object.get_rect().bottom
+        return other_object.get_rect().top >= self.game_object.y >= other_object.get_rect().bottom
 
     def handle_left_right_collision(self, other_object):
         abs_x_velocity = abs(self.game_object.x_velocity)
@@ -99,13 +102,13 @@ class BallPhysicsComponent(GameComponent):
         abs_x_velocity = abs(self.game_object.x_velocity)
         abs_y_velocity = abs(self.game_object.y_velocity)
         if other_object.x > self.game_object.x:
+            self.game_object.x_velocity = -abs_x_velocity
+        else:
+            self.game_object.x_velocity = abs_x_velocity
+        if other_object.y > self.game_object.y:
             self.game_object.y_velocity = -abs_y_velocity
         else:
             self.game_object.y_velocity = abs_y_velocity
-        if other_object.y > self.game_object.y:
-            self.game_object.x_velocity = abs_x_velocity
-        else:
-            self.game_object.x_velocity = -abs_x_velocity
 
     def update(self, elapsed_time):
         if self.hit_bottom():
@@ -144,4 +147,13 @@ class BallPhysicsComponent(GameComponent):
     def play(self):
         self._set_play_state(True)
 
+
+class BlockCollisionComponent(GameComponent):
+
+    def _set_game_object(self, go):
+        super(BlockCollisionComponent, self)._set_game_object(go)
+        go.on_collision += self.on_collision_with
+
+    def on_collision_with(self, other_object):
+        self.game_object.alive = False
 
