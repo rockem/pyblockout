@@ -2,6 +2,7 @@ import pyglet
 
 from blockout import BlockOut
 from pyglet_game import GameFactory, PygletInputHandler
+from sound import PygletSoundFactory
 
 
 class LayoutProvider(object):
@@ -61,8 +62,10 @@ class PygletMain(pyglet.window.Window):
         self.set_mouse_visible(False)
         self.layout_provider = LayoutProvider()
         self.blockout = BlockOut(GameFactory(self), PygletInputHandler(key_handler), self.layout_provider)
+        self.sound_factory = PygletSoundFactory()
 
     def run(self):
+        self.sound_factory.play_background()
         pyglet.clock.schedule_interval(self.update, 1 / 120.0)
         pyglet.app.run()
 
@@ -74,6 +77,6 @@ class PygletMain(pyglet.window.Window):
 
 
 if __name__ == '__main__':
-    pyglet.resource.path = ['../image']
+    pyglet.resource.path = ['../image', '../sound']
     pyglet.resource.reindex()
     PygletMain().run()
