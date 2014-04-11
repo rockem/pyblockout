@@ -5,25 +5,55 @@ from pyglet_game import GameFactory, PygletInputHandler
 
 
 class LayoutProvider(object):
+    LOVE1 = ((1, 1, 1),
+             (0, 1, 0),
+             (0, 1, 0),
+             (0, 1, 0),
+             (0, 1, 0),
+             (1, 1, 1))
 
-    def current_layout(self):
-        # return ((1, 1, 1, 2, 0, 2, 0, 0),
-        #         (0, 1, 0, 0, 2, 0, 0, 2),
-        #         (0, 1, 0, 2, 0, 2, 0, 2),
-        #         (0, 1, 0, 2, 0, 2, 0, 0),
-        #         (0, 1, 0, 2, 0, 2, 0, 0),
-        #         (1, 1, 1, 0, 2, 0, 0, 0))
-        return ((1, 1, 1, 1, 1, 1, 1),
-                (1, 1, 1, 1, 1, 1, 1),
-                (1, 1, 2, 2, 2, 1, 1),
-                (1, 1, 2, 2, 2, 1, 1),
-                (1, 1, 1, 1, 1, 1, 1),
-                (1, 1, 1, 1, 1, 1, 1))
+    LOVE2 = ((2, 2, 2, 0, 2, 2, 2),
+             (2, 0, 0, 2, 0, 0, 2),
+             (0, 2, 0, 0, 0, 2, 0),
+             (0, 2, 0, 0, 0, 2, 0),
+             (0, 0, 2, 0, 2, 0, 0),
+             (0, 0, 0, 2, 0, 0, 0))
 
+    LOVE3 = ((1, 0, 0, 0, 1),
+             (1, 0, 0, 0, 1),
+             (1, 0, 0, 0, 1),
+             (1, 0, 0, 0, 1),
+             (1, 0, 0, 0, 1),
+             (0, 1, 1, 1, 0))
+
+    SCREEN1 = ((1, 1, 1, 1, 1, 1, 1),
+               (1, 0, 0, 0, 0, 0, 1),
+               (1, 0, 2, 0, 2, 0, 1),
+               (1, 0, 2, 0, 2, 0, 1),
+               (1, 0, 0, 0, 0, 0, 1),
+               (1, 1, 1, 1, 1, 1, 1))
+
+    SCREEN2 = ((1, 1, 1, 1, 1, 1, 1),
+               (1, 1, 1, 1, 1, 1, 1),
+               (1, 1, 2, 2, 2, 1, 1),
+               (1, 1, 2, 2, 2, 1, 1),
+               (1, 1, 1, 1, 1, 1, 1),
+               (1, 1, 1, 1, 1, 1, 1))
+
+    LAYOUTS = [SCREEN1, SCREEN2]
+
+    def __init__(self):
+        self.current_layout = 0
+
+    def get_next_layout(self):
+        self.current_layout += 1
+        return self.LAYOUTS[self.current_layout - 1]
+
+    def current_is_last(self):
+        return self.current_layout == len(self.LAYOUTS)
 
 
 class PygletMain(pyglet.window.Window):
-
     def __init__(self):
         super(PygletMain, self).__init__(800, 600)
         key_handler = pyglet.window.key.KeyStateHandler()
@@ -32,9 +62,8 @@ class PygletMain(pyglet.window.Window):
         self.layout_provider = LayoutProvider()
         self.blockout = BlockOut(GameFactory(self), PygletInputHandler(key_handler), self.layout_provider)
 
-
     def run(self):
-        pyglet.clock.schedule_interval(self.update, 1/120.0)
+        pyglet.clock.schedule_interval(self.update, 1 / 120.0)
         pyglet.app.run()
 
     def update(self, elapsed_time):

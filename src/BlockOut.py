@@ -47,7 +47,6 @@ class BlockOut:
             .sprite_factory(self.sprite_factory) \
             .create_at(self.screenRect().center)
         self.game_objects.append(self.blocks)
-        self.blocks.update_layout(self.layout_provider.current_layout())
 
     def screenRect(self):
         return Rect(0, 0, self.game_factory.screen.width, self.game_factory.screen.height)
@@ -56,6 +55,7 @@ class BlockOut:
         if self.input_handler.key_down(SPACE):
             self.ball_physics.play()
         self.update_game_objects(elapsed_time)
+        self.update_layout_if_needed()
         self.detect_collisions()
 
     def update_game_objects(self, elapsed_time):
@@ -74,6 +74,12 @@ class BlockOut:
             go.new_objects = []
         else:
             to_remove.append(go)
+
+    def update_layout_if_needed(self):
+        if self.blocks.num_of_blocks == 0:
+            if not self.layout_provider.current_is_last():
+                self.blocks.update_layout(self.layout_provider.get_next_layout())
+            self.ball_physics.stay()
 
     def detect_collisions(self):
         for i in xrange(len(self.game_objects)):

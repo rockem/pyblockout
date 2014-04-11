@@ -133,6 +133,7 @@ class BlocksGameObject(GameObject):
     def __init__(self):
         super(BlocksGameObject, self).__init__()
         self.sprite_factory = None
+        self.num_of_blocks = 0
 
     def update_layout(self, layout):
         self._layout = layout
@@ -147,7 +148,9 @@ class BlocksGameObject(GameObject):
                 .components([BlockCollisionComponent()]) \
                 .create()
             sprite.position = self.get_position_for(sprite, j, i)
+            sprite.on_collision += self.on_block_collision
             self.new_objects.append(sprite)
+            self.num_of_blocks += 1
 
     def create_sprite_of_type(self, type):
         if type == 1:
@@ -160,6 +163,9 @@ class BlocksGameObject(GameObject):
 
     def anchor_block(self):
         return len(self._layout[0]) / 2, len(self._layout)
+
+    def on_block_collision(self, other_object):
+        self.num_of_blocks -= 1
 
     def collides_with(self, other_obj):
         return False
