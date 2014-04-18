@@ -1,7 +1,9 @@
+import mox
 from nose.tools import assert_less, assert_true, assert_false, assert_greater, assert_equals, assert_not_equal
-from component import BallPhysicsComponent, BlockCollisionComponent
+from component import BallPhysicsComponent, BlockCollisionComponent, SoundOnCollisionComponent
 from game import GameObject
 from rect import Rect
+from sound import SoundFactory
 
 __author__ = 'elisegal'
 
@@ -101,3 +103,17 @@ class TestBlockCollisionComponent(object):
         component.game_object = StubGameObject(0, 0)
         component.on_collision_with(None)
         assert_false(component.game_object.alive)
+
+
+class TestSoundOnCollisionComponent(object):
+
+    SOUND_NAME = "popov"
+
+    def test_should_play_on_collision(self):
+        mocker = mox.Mox()
+        sound_factory = mocker.CreateMock(SoundFactory)
+        component = SoundOnCollisionComponent(self.SOUND_NAME, sound_factory)
+        sound_factory.play_efx(self.SOUND_NAME)
+        mocker.ReplayAll()
+        component.on_collision_with(None)
+        mocker.VerifyAll()

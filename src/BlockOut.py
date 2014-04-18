@@ -1,23 +1,26 @@
-from component import UserInputComponent, ClampComponent, BallPhysicsComponent, SimpleMoveComponent
+from component import UserInputComponent, ClampComponent, BallPhysicsComponent, SimpleMoveComponent, \
+    SoundOnCollisionComponent
 from game import SpriteGameObjectCreator, BlocksGameObjectCreator
 
 from key import SPACE
-from rect import Rect
-from sprite import SpriteFactory
+from sound import PACK, BLOCK
 
 
 __author__ = 'eli.segal'
 
 
 class BlockOut:
-    def __init__(self, game_factory, input_handler, layout_provider):
-        self.game_factory = game_factory
-        self.input_handler = input_handler
-        self.layout_provider = layout_provider
-        self.background = self.create_background()
+    def __init__(self):
+        self.game_factory = None
+        self.input_handler = None
+        self.layout_provider = None
+        self.sprite_factory = None
+        self.screen_rect = None
+        self.sound_factory = None
+
+    def init(self):
         self.game_objects = []
-        self.sprites_batch = self.game_factory.create_batch()
-        self.sprite_factory = SpriteFactory(self.sprites_batch)
+        self.background = self.create_background()
         self.createAllSprites()
 
     def create_background(self):
@@ -31,25 +34,23 @@ class BlockOut:
     def create_pack(self):
         self.pack = SpriteGameObjectCreator(self.sprite_factory.create_pack_sprite()) \
             .components(
-            [UserInputComponent(self.input_handler), SimpleMoveComponent(), ClampComponent(self.screenRect())]) \
-            .create_at(self.screenRect().width / 2, 20)
+            [UserInputComponent(self.input_handler), SimpleMoveComponent(), ClampComponent(self.screen_rect), SoundOnCollisionComponent(PACK, self.sound_factory)]) \
+            .create_at(self.screen_rect.width / 2, 20)
         self.game_objects.append(self.pack)
 
     def create_ball(self):
-        self.ball_physics = BallPhysicsComponent(self.pack, self.screenRect())
+        self.ball_physics = BallPhysicsComponent(self.pack, self.screen_rect)
         self.ball = SpriteGameObjectCreator(self.sprite_factory.create_ball_sprite()) \
-            .components([self.ball_physics, SimpleMoveComponent(), ClampComponent(self.screenRect())]) \
+            .components([self.ball_physics, SimpleMoveComponent(), ClampComponent(self.screen_rect)]) \
             .create()
         self.game_objects.append(self.ball)
 
     def create_blocks(self):
         self.blocks = BlocksGameObjectCreator() \
             .sprite_factory(self.sprite_factory) \
-            .create_at(self.screenRect().center)
+            .sound_factory(self.sound_factory) \
+            .create_at(self.screen_rect.center)
         self.game_objects.append(self.blocks)
-
-    def screenRect(self):
-        return Rect(0, 0, self.game_factory.screen.width, self.game_factory.screen.height)
 
     def on_update(self, elapsed_time):
         if self.input_handler.key_down(SPACE):
@@ -86,10 +87,12 @@ class BlockOut:
             for j in xrange(i + 1, len(self.game_objects)):
                 obj_1 = self.game_objects[i]
                 obj_2 = self.game_objects[j]
-                if obj_1.collides_with(obj_2):
-                    obj_1.handle_collision_with(obj_2)
-                    obj_2.handle_collision_with(obj_1)
+                if obj_1.active and obj_2.active:
+                    if obj_1.collides_with(obj_2):
+                        obj_1.handle_collision_with(obj_2)
+                        obj_2.handle_collision_with(obj_1)
 
     def on_render(self):
-        self.background.blit(self.game_factory.screen.width / 2, self.game_factory.screen.height / 2)
-        self.sprites_batch.draw()
+        self.background.blit(0, 0)
+        self.sprite_factory.draw()
+

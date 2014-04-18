@@ -66,6 +66,7 @@ class BallPhysicsComponent(GameComponent):
     def _set_game_object(self, go):
         super(BallPhysicsComponent, self)._set_game_object(go)
         self.game_object.on_collision += self.on_collision_with
+        self.game_object.active = False
 
     def on_collision_with(self, other_object):
         if self.is_top_bottom_collision(other_object):
@@ -113,7 +114,6 @@ class BallPhysicsComponent(GameComponent):
     def update(self, elapsed_time):
         if self.hit_bottom():
             self.stay()
-            self.stay()
         if not self._play_state:
             self.keep_ball_on_pack()
         else:
@@ -126,12 +126,14 @@ class BallPhysicsComponent(GameComponent):
         self._set_play_state(False)
 
     def _set_play_state(self, state):
-        self._play_state = state
-        velocity = 0
-        if state:
-            velocity = self.BALL_VELOCITY
-        self.game_object.x_velocity = velocity
-        self.game_object.y_velocity = velocity
+        if self._play_state != state:
+            self.game_object.active = state
+            self._play_state = state
+            velocity = 0
+            if state:
+                velocity = self.BALL_VELOCITY
+            self.game_object.x_velocity = velocity
+            self.game_object.y_velocity = velocity
 
     def keep_ball_on_pack(self):
         self.game_object.x = self._pack.x
@@ -157,3 +159,16 @@ class BlockCollisionComponent(GameComponent):
     def on_collision_with(self, other_object):
         self.game_object.alive = False
 
+
+class SoundOnCollisionComponent(GameComponent):
+
+    def __init__(self, sound_name, sound_factory):
+        self.sound_name = sound_name
+        self.sound_factory = sound_factory
+
+    def _set_game_object(self, go):
+        super(SoundOnCollisionComponent, self)._set_game_object(go)
+        go.on_collision += self.on_collision_with
+
+    def on_collision_with(self, other_object):
+        self.sound_factory.play_efx(self.sound_name)

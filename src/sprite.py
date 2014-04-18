@@ -9,8 +9,8 @@ WHITE_BLOCK_IMAGE = 'white_block.png'
 
 class SpriteFactory:
 
-    def __init__(self, batch):
-        self._batch = batch
+    def __init__(self):
+        self._batch = pyglet.graphics.Batch()
 
     def create_ball_sprite(self):
         return self.create_simple_sprite(BALL_IMAGE)
@@ -32,3 +32,6 @@ class SpriteFactory:
 
     def create_white_block(self):
         return self.create_simple_sprite(WHITE_BLOCK_IMAGE)
+
+    def draw(self):
+        self._batch.draw()

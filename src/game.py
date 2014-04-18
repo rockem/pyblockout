@@ -1,6 +1,7 @@
-from component import BlockCollisionComponent
+from component import BlockCollisionComponent, SoundOnCollisionComponent
 from event import EventHook
 from rect import Rect
+from sound import BLOCK
 
 __author__ = 'elisegal'
 
@@ -13,6 +14,7 @@ class GameObject(object):
         self.new_objects = []
         self._components = []
         self.alive = True
+        self.active = True
         self.on_collision = EventHook()
 
     def set_components(self, value):
@@ -133,6 +135,7 @@ class BlocksGameObject(GameObject):
     def __init__(self):
         super(BlocksGameObject, self).__init__()
         self.sprite_factory = None
+        self.sound_factory = None
         self.num_of_blocks = 0
 
     def update_layout(self, layout):
@@ -145,7 +148,7 @@ class BlocksGameObject(GameObject):
         sprite_type = self._layout[i][j]
         if sprite_type > 0:
             sprite = SpriteGameObjectCreator(self.create_sprite_of_type(sprite_type)) \
-                .components([BlockCollisionComponent()]) \
+                .components([BlockCollisionComponent(), SoundOnCollisionComponent(BLOCK, self.sound_factory)]) \
                 .create()
             sprite.position = self.get_position_for(sprite, j, i)
             sprite.on_collision += self.on_block_collision
@@ -176,9 +179,14 @@ class BlocksGameObjectCreator(GameObjectCreator):
         self._sprite_factory = factory
         return self
 
+    def sound_factory(self, factory):
+        self._sound_factory = factory
+        return self
+
     def _create_game_object(self):
         game_object = BlocksGameObject()
         game_object.sprite_factory = self._sprite_factory
+        game_object.sound_factory = self._sound_factory
         return game_object
 
 

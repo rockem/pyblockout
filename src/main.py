@@ -2,7 +2,9 @@ import pyglet
 
 from blockout import BlockOut
 from pyglet_game import GameFactory, PygletInputHandler
+from rect import Rect
 from sound import PygletSoundFactory
+from sprite import SpriteFactory
 
 
 class LayoutProvider(object):
@@ -55,17 +57,28 @@ class LayoutProvider(object):
 
 
 class PygletMain(pyglet.window.Window):
+    SCREEN_SIZE = (800, 600)
+
     def __init__(self):
-        super(PygletMain, self).__init__(800, 600)
-        key_handler = pyglet.window.key.KeyStateHandler()
-        self.push_handlers(key_handler)
+        super(PygletMain, self).__init__(self.SCREEN_SIZE[0], self.SCREEN_SIZE[1])
+        self.key_handler = pyglet.window.key.KeyStateHandler()
+        self.push_handlers(self.key_handler)
         self.set_mouse_visible(False)
-        self.layout_provider = LayoutProvider()
-        self.blockout = BlockOut(GameFactory(self), PygletInputHandler(key_handler), self.layout_provider)
-        self.sound_factory = PygletSoundFactory()
+        self.blockout = self.create_blockout()
+
+    def create_blockout(self):
+        blockout = BlockOut()
+        blockout.screen_rect = Rect(0, 0, self.SCREEN_SIZE[0], self.SCREEN_SIZE[1])
+        blockout.input_handler = PygletInputHandler(self.key_handler)
+        blockout.layout_provider = LayoutProvider()
+        blockout.sound_factory = PygletSoundFactory()
+        blockout.sprite_factory = SpriteFactory()
+        blockout.game_factory = GameFactory()
+        return blockout
 
     def run(self):
-        self.sound_factory.play_background()
+        self.blockout.init()
+        #self.sound_factory.play_background()
         pyglet.clock.schedule_interval(self.update, 1 / 120.0)
         pyglet.app.run()
 
