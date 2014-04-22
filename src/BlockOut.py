@@ -21,6 +21,7 @@ class BlockOut:
     def init(self):
         self.game_objects = []
         self.background = self.create_background()
+        self.win_message = self.game_factory.load_image('win_message.png')
         self.createAllSprites()
 
     def create_background(self):
@@ -94,5 +95,7 @@ class BlockOut:
 
     def on_render(self):
         self.background.blit(0, 0)
+        if self.layout_provider.current_is_last() and self.blocks.num_of_blocks == 0:
+            self.win_message.blit(self.screen_rect.width / 2 - self.win_message.width / 2, self.screen_rect.height / 2)
         self.sprite_factory.draw()
 

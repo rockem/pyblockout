@@ -15,10 +15,13 @@ class PygletSoundFactory(SoundFactory):
 
     def __init__(self):
         self._music = pyglet.resource.media('sillylovesongs.wav', streaming=False)
+        pack_sound = pyglet.resource.media('pack_sound.wav', streaming=False)
+        wall_sound = pyglet.resource.media('wall_sound.wav', streaming=False)
+        block_sound = pyglet.resource.media('block_sound.wav', streaming=False)
         self._efx = {
-            PACK: pyglet.resource.media('pack_sound.wav', streaming=False),
-            WALL: pyglet.resource.media('wall_sound.wav', streaming=False),
-            BLOCK: pyglet.resource.media('block_sound.wav', streaming=False)
+            PACK: pack_sound,
+            WALL: wall_sound,
+            BLOCK: block_sound
         }
         self._set_music_volume(80)
         self._set_efx_volume(100)

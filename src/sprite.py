@@ -33,5 +33,8 @@ class SpriteFactory:
     def create_white_block(self):
         return self.create_simple_sprite(WHITE_BLOCK_IMAGE)
 
+    def create_win_message(self):
+        return self.create_simple_sprite('win_message.png')
+
     def draw(self):
         self._batch.draw()

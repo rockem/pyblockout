@@ -1,3 +1,4 @@
+import subprocess
 import pyglet
 
 from blockout import BlockOut
@@ -43,7 +44,7 @@ class LayoutProvider(object):
                (1, 1, 1, 1, 1, 1, 1),
                (1, 1, 1, 1, 1, 1, 1))
 
-    LAYOUTS = [SCREEN1, SCREEN2]
+    LAYOUTS = [LOVE1, LOVE2, LOVE3]
 
     def __init__(self):
         self.current_layout = 0
@@ -78,7 +79,7 @@ class PygletMain(pyglet.window.Window):
 
     def run(self):
         self.blockout.init()
-        #self.sound_factory.play_background()
+        self.player = subprocess.Popen(["afplay", "sillylovesongs.mp3"])
         pyglet.clock.schedule_interval(self.update, 1 / 120.0)
         pyglet.app.run()
 
@@ -87,6 +88,10 @@ class PygletMain(pyglet.window.Window):
 
     def on_draw(self):
         self.blockout.on_render()
+
+    def on_close(self):
+        self.player.terminate()
+        super(PygletMain, self).on_close()
 
 
 if __name__ == '__main__':
