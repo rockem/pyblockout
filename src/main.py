@@ -9,26 +9,6 @@ from sprite import SpriteFactory
 
 
 class LayoutProvider(object):
-    LOVE1 = ((1, 1, 1),
-             (0, 1, 0),
-             (0, 1, 0),
-             (0, 1, 0),
-             (0, 1, 0),
-             (1, 1, 1))
-
-    LOVE2 = ((2, 2, 2, 0, 2, 2, 2),
-             (2, 0, 0, 2, 0, 0, 2),
-             (0, 2, 0, 0, 0, 2, 0),
-             (0, 2, 0, 0, 0, 2, 0),
-             (0, 0, 2, 0, 2, 0, 0),
-             (0, 0, 0, 2, 0, 0, 0))
-
-    LOVE3 = ((1, 0, 0, 0, 1),
-             (1, 0, 0, 0, 1),
-             (1, 0, 0, 0, 1),
-             (1, 0, 0, 0, 1),
-             (1, 0, 0, 0, 1),
-             (0, 1, 1, 1, 0))
 
     SCREEN1 = ((1, 1, 1, 1, 1, 1, 1),
                (1, 0, 0, 0, 0, 0, 1),
@@ -44,7 +24,14 @@ class LayoutProvider(object):
                (1, 1, 1, 1, 1, 1, 1),
                (1, 1, 1, 1, 1, 1, 1))
 
-    LAYOUTS = [LOVE1, LOVE2, LOVE3]
+    SCREEN3 = ((2, 0, 1, 2, 1, 0, 2),
+               (1, 0, 1, 2, 1, 0, 1),
+               (1, 0, 2, 2, 2, 0, 1),
+               (1, 0, 2, 2, 2, 0, 1),
+               (1, 0, 1, 2, 1, 0, 1),
+               (2, 0, 1, 2, 1, 0, 2))
+
+    LAYOUTS = [SCREEN1, SCREEN2, SCREEN3]
 
     def __init__(self):
         self.current_layout = 0
@@ -79,7 +66,6 @@ class PygletMain(pyglet.window.Window):
 
     def run(self):
         self.blockout.init()
-        self.player = subprocess.Popen(["afplay", "sillylovesongs.mp3"])
         pyglet.clock.schedule_interval(self.update, 1 / 120.0)
         pyglet.app.run()
 
@@ -90,7 +76,6 @@ class PygletMain(pyglet.window.Window):
         self.blockout.on_render()
 
     def on_close(self):
-        self.player.terminate()
         super(PygletMain, self).on_close()
 
 
